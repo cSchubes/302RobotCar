@@ -11,24 +11,24 @@
   */
 
 //MOTOR PINS
-int leftSidePWM = 6;
-int rightSidePWM = 5;
-int leftEnable1 = 7;
-int leftEnable2 = 8;
-int rightEnable1 = 3;
-int rightEnable2 = 4;
+int leftSidePWM = 5;
+int rightSidePWM = 6;
+int leftEnable1 = 4;
+int leftEnable2 = 3;
+int rightEnable1 = 8;
+int rightEnable2 = 7;
 
 //SENSOR PINS
 int frontIR = A0;
 int leftIR = A1;
 int rightIR = A2;
-int leftPhoto = A6;
+int leftPhoto = A3;
 int midPhoto = A4;
 int rightPhoto = A5;
 
 //DATA VARIABLES
-int black = 60;
-int red = 100;
+int black = 470;
+//int red = 100;
 
 void setup() {
   setUpMotors();
@@ -38,27 +38,40 @@ void setup() {
 }
 
 void loop() {
+  //Serial.println(analogRead(leftPhoto));
   //check if an obstacle is in front of the car
+  //goStraight();
+  /*
   if(analogRead(frontIR) > 550){
     stopCar();  
     return;
   }
+  */
   //check if we are still on the line
-  if(onLine()){
-    if(analogRead(leftPhoto) > black){
-      while(analogRead(midPhoto) < black){
-        turnRight();
-      }
-      return;
-    }
-    if(analogRead(rightPhoto) > black){
-      while(analogRead(midPhoto) < black){
-        turnLeft();
-      }
-      return;
-    }
+  //Serial.println(analogRead(rightPhoto));
+  Serial.print("Left: ");
+  Serial.println(analogRead(leftPhoto));
+  Serial.print("Mid: ");
+  Serial.println(analogRead(midPhoto));
+  Serial.print("Right: ");
+  Serial.println(analogRead(rightPhoto));
+  goStraight();
+  //if(onLine()){
+  /*
     goStraight();
-  }
+    if(analogRead(midPhoto) > black){
+      if(analogRead(leftPhoto) < black){
+          stopCar();
+      }
+      else if(analogRead(rightPhoto) < black){
+          turnRight();
+      }
+    }
+    else{
+      goStraight();
+    }
+  //}
+  /*
   else{   //if we arent on the line, assume we are in the walled area
     //check if we have reached the red finish line
     if(analogRead(midPhoto)>red){
@@ -73,6 +86,7 @@ void loop() {
     else
       goStraight();
   }
+  */
 }
 
 //INIT METHODS
@@ -104,8 +118,8 @@ void turnRight() {
   //turn right side backwards
   digitalWrite(rightEnable1, HIGH);
   digitalWrite(rightEnable2, LOW);
-  analogWrite(leftSidePWM, 100);
-  analogWrite(rightSidePWM, 100);
+  analogWrite(leftSidePWM, 170);
+  analogWrite(rightSidePWM, 150);
 }
 
 void turnLeft() {
@@ -115,8 +129,8 @@ void turnLeft() {
   //turn right side forwards
   digitalWrite(rightEnable1, LOW);
   digitalWrite(rightEnable2, HIGH);
-  analogWrite(leftSidePWM, 100);
-  analogWrite(rightSidePWM, 100);
+  analogWrite(leftSidePWM, 170);
+  analogWrite(rightSidePWM, 150);
 }
 
 void goStraight() {
@@ -127,7 +141,7 @@ void goStraight() {
   digitalWrite(rightEnable1, HIGH);
   digitalWrite(rightEnable2, LOW);
   analogWrite(leftSidePWM, 200);
-  analogWrite(rightSidePWM, 170);
+  analogWrite(rightSidePWM, 150);
 }
 
 void slowRight(){
@@ -137,8 +151,8 @@ void slowRight(){
   //turn right side forwards
   digitalWrite(rightEnable1, HIGH);
   digitalWrite(rightEnable2, LOW);
-  analogWrite(leftSidePWM, 200);
-  analogWrite(rightSidePWM, 150);
+  analogWrite(leftSidePWM, 150);
+  analogWrite(rightSidePWM, 200);
 }
 
 void slowLeft(){
