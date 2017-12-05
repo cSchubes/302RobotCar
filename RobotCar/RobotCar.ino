@@ -13,10 +13,10 @@
 //MOTOR PINS
 int leftSidePWM = 5;
 int rightSidePWM = 6;
-int leftEnable1 = 4;
-int leftEnable2 = 3;
-int rightEnable1 = 8;
-int rightEnable2 = 7;
+int leftEnable1 = 8;
+int leftEnable2 = 7;
+int rightEnable1 = 4;
+int rightEnable2 = 3;
 
 //SENSOR PINS
 int frontIR = A0;
@@ -27,7 +27,7 @@ int midPhoto = A4;
 int rightPhoto = A5;
 
 //DATA VARIABLES
-int black = 470;
+int black = 600;
 //int red = 100;
 
 void setup() {
@@ -38,17 +38,10 @@ void setup() {
 }
 
 void loop() {
-  //Serial.println(analogRead(leftPhoto));
-  //check if an obstacle is in front of the car
-  //goStraight();
-  /*
+  //check if obstacle is in front of us
   if(analogRead(frontIR) > 550){
     stopCar();  
-    return;
   }
-  */
-  //check if we are still on the line
-  //Serial.println(analogRead(rightPhoto));
   /*
   Serial.print("Left: ");
   Serial.println(analogRead(leftPhoto));
@@ -56,36 +49,30 @@ void loop() {
   Serial.println(analogRead(midPhoto));
   Serial.print("Right: ");
   Serial.println(analogRead(rightPhoto));
+  delay(500);
   */
-  if(analogRead(midPhoto) < black)
-  {//right
+  //if we are in the middle keep going
+  else if((analogRead(midPhoto) < analogRead(leftPhoto)) && (analogRead(midPhoto) < analogRead(rightPhoto)))
+  {
     goStraight();
   }
-  //data_sheet
-  // if the line is under the right sensor, adjust relative speeds to turn to the right
-  else if(analogRead(leftPhoto) < black)
-  {//left
+  //if we are veering right, go left
+  else if((analogRead(leftPhoto) < analogRead(midPhoto)) && (analogRead(leftPhoto) < analogRead(rightPhoto)))
+  {
     turnLeft();
   }
-  //data_sheet
-  // if the line is under the left sensor, adjust relative speeds to turn to the left
-  else if(analogRead(rightPhoto) < black)
-  {//right
+  //if we are veering left, go right
+  else if((abs(analogRead(rightPhoto) - analogRead(midPhoto))<30) && (abs(analogRead(rightPhoto) - analogRead(leftPhoto))<30))
+  {
     turnRight();
   }
-  //data_sheet
-  // if all sensors are on black or up in the air, stop the motors.
-  // otherwise, run motors given the control speeds above.
-  if((analogRead(midPhoto) > black) && (analogRead(leftPhoto) > black) && (analogRead(rightPhoto) > black))
-  {
-    //stop
-    stopCar();
-  }
+  //default case
   else
   {
     goStraight();
   }
-  delay(5);  // add a delay to decrease sensitivity.
+  //better for sensitivity
+  delay(5);
   /*
   //if(onLine()){
     goStraight();
@@ -143,24 +130,24 @@ void setUpSensors() {
 
 void turnRight() {
   //turn left side forwards
-  digitalWrite(leftEnable1, LOW);
-  digitalWrite(leftEnable2, HIGH);
+  digitalWrite(leftEnable1, HIGH);
+  digitalWrite(leftEnable2, LOW);
   //turn right side backwards
-  digitalWrite(rightEnable1, LOW);
+  digitalWrite(rightEnable1, HIGH);
   digitalWrite(rightEnable2, LOW);
-  analogWrite(leftSidePWM, 170);
-  analogWrite(rightSidePWM, 150);
+  analogWrite(leftSidePWM, 160);
+  analogWrite(rightSidePWM, 0);
 }
 
 void turnLeft() {
   //turn left side backwards
-  digitalWrite(leftEnable1, LOW);
+  digitalWrite(leftEnable1, HIGH);
   digitalWrite(leftEnable2, LOW);
   //turn right side forwards
-  digitalWrite(rightEnable1, LOW);
-  digitalWrite(rightEnable2, HIGH);
-  analogWrite(leftSidePWM, 170);
-  analogWrite(rightSidePWM, 150);
+  digitalWrite(rightEnable1, HIGH);
+  digitalWrite(rightEnable2, LOW);
+  analogWrite(leftSidePWM, 0);
+  analogWrite(rightSidePWM, 140);
 }
 
 void goStraight() {
