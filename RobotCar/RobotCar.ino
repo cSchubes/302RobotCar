@@ -49,15 +49,45 @@ void loop() {
   */
   //check if we are still on the line
   //Serial.println(analogRead(rightPhoto));
+  /*
   Serial.print("Left: ");
   Serial.println(analogRead(leftPhoto));
   Serial.print("Mid: ");
   Serial.println(analogRead(midPhoto));
   Serial.print("Right: ");
   Serial.println(analogRead(rightPhoto));
-  goStraight();
-  //if(onLine()){
+  */
+  if(analogRead(midPhoto) < black)
+  {//right
+    goStraight();
+  }
+  //data_sheet
+  // if the line is under the right sensor, adjust relative speeds to turn to the right
+  else if(analogRead(leftPhoto) < black)
+  {//left
+    turnLeft();
+  }
+  //data_sheet
+  // if the line is under the left sensor, adjust relative speeds to turn to the left
+  else if(analogRead(rightPhoto) < black)
+  {//right
+    turnRight();
+  }
+  //data_sheet
+  // if all sensors are on black or up in the air, stop the motors.
+  // otherwise, run motors given the control speeds above.
+  if((analogRead(midPhoto) > black) && (analogRead(leftPhoto) > black) && (analogRead(rightPhoto) > black))
+  {
+    //stop
+    stopCar();
+  }
+  else
+  {
+    goStraight();
+  }
+  delay(5);  // add a delay to decrease sensitivity.
   /*
+  //if(onLine()){
     goStraight();
     if(analogRead(midPhoto) > black){
       if(analogRead(leftPhoto) < black){
@@ -116,7 +146,7 @@ void turnRight() {
   digitalWrite(leftEnable1, LOW);
   digitalWrite(leftEnable2, HIGH);
   //turn right side backwards
-  digitalWrite(rightEnable1, HIGH);
+  digitalWrite(rightEnable1, LOW);
   digitalWrite(rightEnable2, LOW);
   analogWrite(leftSidePWM, 170);
   analogWrite(rightSidePWM, 150);
@@ -124,7 +154,7 @@ void turnRight() {
 
 void turnLeft() {
   //turn left side backwards
-  digitalWrite(leftEnable1, HIGH);
+  digitalWrite(leftEnable1, LOW);
   digitalWrite(leftEnable2, LOW);
   //turn right side forwards
   digitalWrite(rightEnable1, LOW);
